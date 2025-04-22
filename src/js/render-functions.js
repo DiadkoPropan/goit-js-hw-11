@@ -1,97 +1,50 @@
-import { getImagesByQuery } from './pixabay-api';
-import iziToast from 'izitoast';
-import 'izitoast/dist/css/iziToast.min.css';
-import SimpleLightbox from "simplelightbox";
-import "simplelightbox/dist/simple-lightbox.min.css";
 
-const gallery = document.querySelector(".gallery");
-const form = document.querySelector('.form');
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
-function createGallery(images) {
-  const markup = images.map(image => `
-  <li class="gallery-item">
-    <a class="gallery-link" href="${image.largeImageURL}">
-      <img
-        class="gallery-image"
-        src="${image.webformatURL}"
-        alt="${image.tags}"
-      />
-    </a>
-    <div class="info">
-        <p><b>Likes</b> ${image.likes}</p>
-        <p><b>Views</b> ${image.views}</p>
-        <p><b>Comments</b> ${image.comments}</p>
-        <p><b>Downloads</b> ${image.downloads}</p>
-      </div>
-  </li>`).join("");
 
-  gallery.insertAdjacentHTML('beforeend', markup);
 
-  const lightbox = new SimpleLightbox('.gallery a', {
-    captionsData: 'alt',
-    captionPosition: 'bottom',
-    captionDelay: 250,
-    scrollZoom: true
-  });
 
-  lightbox.refresh();
+export function createGallery(images) {
+    return images.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => `
+        <li class="gallery-item">
+            <a href="${largeImageURL}" class="gallery-link">
+                <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+            </a>
+            <div class="info">
+                <p class="info-item"><b>Likes</b> ${likes}</p>
+                <p class="info-item"><b>Views</b> ${views}</p>
+                <p class="info-item"><b>Comments</b> ${comments}</p>
+                <p class="info-item"><b>Downloads</b> ${downloads}</p>
+            </div>
+        </li>
+    `).join('');
 }
 
-function clearGallery() {
-  const gallery = document.querySelector(".gallery");
-  gallery.innerHTML = '';  
+
+export function clearGallery() {
+    const galleryElement = document.querySelector('.gallery');
+    if (galleryElement) {
+        galleryElement.innerHTML = "";
+    }
 }
 
-function showLoader() {
-  const loader = document.querySelector(".loader"); 
-  loader.classList.add("is-visible");  
-}
-function hideLoader() {
-  const loader = document.querySelector(".loader"); 
-  loader.classList.remove("is-visible"); 
-}
 
-function fetchImages(query) {
-  console.log("Fetching images for query: ", query);
-  showLoader(); 
-  getImagesByQuery(query)
-    .then(images => {
-      console.log("Received images: ", images);
-      clearGallery();  
-      createGallery(images);  
-      hideLoader();  
-    })
-    .catch(error => {
-      hideLoader();  
-      iziToast.show({
-        title: 'Error',
-        message: "Something went wrong. Please try again later.",
-        position: "topRight",
-        backgroundColor: "#ef4040",
-        messageColor: "#fff",
-        timeout: 5000,
-        progressBar: false,
-        close: true,
-        transitionIn: 'fadeInDown',
-        transitionOut: 'fadeOutUp',
-      });
-    });
+
+export function showLoader() {
+    const loader = document.querySelector('.loader');
+    if (loader) {
+        console.log("loader on");
+        loader.classList.add('visible');
+    }
 }
 
-form.addEventListener('submit', event => {
-  event.preventDefault(); 
 
-  const query = event.target.elements['search-text'].value.trim();
 
-  if (query === '') return;
-
-  fetchImages(query);
-});
-
-export {
-  createGallery,
-  clearGallery,
-  showLoader,
-  hideLoader,
-  fetchImages,
-};
+export function hideLoader() {
+    const loader = document.querySelector('.loader');
+    if (loader) {
+        console.log("loader off");
+        loader.classList.remove('visible');
+    }
+}

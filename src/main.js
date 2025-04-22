@@ -1,4 +1,3 @@
-
 import iziToast from "izitoast";
 import "izitoast/dist/css/iziToast.min.css";
 
@@ -29,7 +28,6 @@ function handleSubmit(event) {
         .then(response => {
             hideLoader();
 
-            // console.log(response.data.hits);
             if (!response.data.hits || response.data.hits.length === 0) {
                 iziToast.warning({
                     title: "No Results",
